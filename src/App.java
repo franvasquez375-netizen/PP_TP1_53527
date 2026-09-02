@@ -68,6 +68,8 @@ public class App {
             sc.nextLine();
             int idActividad = 1;
             for (int j = 0; j < cantidadActividades; j++) {
+                System.out.println("Ingrese si la actividad es una charla o un taller:");
+                String tipoActividad = sc.nextLine().trim().toLowerCase();
                 System.out.println("Ingrese el título de la actividad:" + idActividad);
                 String tituloActividad = sc.nextLine();
                 int cupoMinimoRequerido = 5;
@@ -80,7 +82,7 @@ public class App {
                 }
                 sc.nextLine();
                 //Construyo la actividad con los datos leídos
-                evento.crearActividad(idActividad, tituloActividad, cupoMaximo);
+                evento.crearActividad(idActividad, tituloActividad, cupoMaximo, tipoActividad);
                 ++idActividad;
             }
 
@@ -112,7 +114,7 @@ public class App {
                 // Busco al estudiante en la lista y lo inscribo
                 for (Estudiante estudiante : lsitaEstudiantes) {
                     if (estudiante.getLegajo().equals(legajo)) {
-                        // Usamos idBuscado - 1 para obtener el índice correcto del ArrayList
+                        // Uso idBuscado - 1 para obtener el índice correcto del ArrayList
                         evento.getActividades().get(idBuscado - 1).inscribir(estudiante);
                         System.out.println("Estudiante inscripto con éxito.");
                     }

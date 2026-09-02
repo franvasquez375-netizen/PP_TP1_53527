@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Scanner;
 
 public class EventoUniversitario {
     //Atributos
@@ -45,9 +46,13 @@ public class EventoUniversitario {
     //3ER MÉTODO, Calculo el costo base, si el evento no es gratuito
     public double  calcularCostoEstimado(double costoBase){
         if(gratuito){
-            return 0;
+            return 0.0;
         }
-        return costoBase*1.21;
+        double costoTotal = costoBase;
+        for (Actividad actividad : actividades){
+            costoTotal += actividad.calcularCostoMateriales(); //Ligado dinámico
+        }
+        return costoTotal*1.21;
     }
     //4TO MÉTODO, Asigno la sala
     public void asignarSala(Sala sala){
@@ -55,9 +60,28 @@ public class EventoUniversitario {
     }
 
     //5TO MÉTODO, Constructor de la actividad y la añado a la lista. Relación de composición actividad/es-Evento
-    public void crearActividad(int id, String titulo, int cupo){
-        Actividad actividad = new  Actividad(id,titulo,cupo);
-        this.actividades.add(actividad);
+    public void crearActividad(int id, String titulo, int cupo, String tipoActividad){
+        Scanner scanner = new Scanner(System.in);
+        switch (tipoActividad){
+            case "charla":
+                System.out.println("Ingrese el nombre del disertante para la charla " + titulo + " :");
+                String disertante = scanner.nextLine();
+                Actividad charla = new Charla(id, titulo, disertante, cupo);
+                this.actividades.add(charla);
+                break;
+            case "taller":
+                System.out.println("El taller requiere notebook S/N?");
+                String respuesta = scanner.nextLine().trim().toLowerCase();
+                boolean requiereNotebook = false;
+                if (respuesta.equals("s") || respuesta.equals("si") || respuesta.equals("sí")) {
+                    requiereNotebook = true;
+                }
+                Actividad taller = new Taller(id, titulo, requiereNotebook, cupo);
+                this.actividades.add(taller);
+                break;
+            default:
+                System.out.println("Error: Tipo de actividad no reconocido.");
+        }
     }
 
     //6TO MÉTODO, Mostrar los datos de los eventos creados y su copia
@@ -70,7 +94,7 @@ public class EventoUniversitario {
         System.out.println("\nActividades:");
         System.out.println("------------------------------------");
         for (Actividad actividad : actividades){
-            System.out.println("- " +actividad.getTitulo() + "(id=" +actividad.getId()+ ")" + " - Cupo máximo: " + actividad.getCupoMaximo());
+            actividad.mostrarIdentificacion(); //Invocación polimórfica: la subclase concreta define su tipo en tiempo de ejecución
             actividad.mostrarInscripciones();
         }
         System.out.println("==============================================");

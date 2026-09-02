@@ -2,7 +2,7 @@ import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-public class Actividad {
+public abstract class Actividad {
     //Atributos
     private int id;
     private String titulo;
@@ -47,7 +47,16 @@ public class Actividad {
         }
     }
 
+    //3ER MÉTODO
+    public final void mostrarIdentificacion(){
+        System.out.println("- "+ getTipo() + ": " + titulo + "(id=" + id + ")" + " - Cupo máximo: " + cupoMaximo);
+    }
 
+    //4TO MÉTODO
+    public abstract double calcularCostoMateriales();
+
+    //5TO MÉTODO
+    public abstract String getTipo();
 
     //Getters y Setters
     public int getId() {

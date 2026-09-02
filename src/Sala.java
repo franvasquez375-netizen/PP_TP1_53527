@@ -27,3 +27,4 @@ public class Sala {
         this.nombre = nombre;
     }
 }
+
