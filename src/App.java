@@ -1,19 +1,42 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class App {
-    public static void main(String [] args){
+    public static void main(String[] args){
         Scanner sc = new Scanner(System.in);
+
+        boolean continuar=true;
         int id = 1;
 
-        System.out.println("REGISTRO DE EVENTOS");
+        //Creo la lista de estudiantes
+        List<Estudiante> lsitaEstudiantes = new ArrayList<>();
+
+        System.out.println("REGISTRO DE ESTUDIANTES: ");
         System.out.println("======================");
+
+        while (continuar){
+            System.out.println("Ingese legajo del estudiante: ");
+            String legajo = sc.nextLine();
+            System.out.println("Ingese nombre y apellido del estudiante: ");
+            String apenomb = sc.nextLine();
+            lsitaEstudiantes.add(new Estudiante(legajo, apenomb));
+            System.out.println("desea crear otro estudiante  S/N?");
+            String respuesta = sc.nextLine().trim().toLowerCase();
+            continuar = (respuesta.equals("s") || respuesta.equals("si") || respuesta.equals("sí")) ? true : false;
+        };
+
+        System.out.println("\n\nREGISTRO DE EVENTOS: ");
+        System.out.println("===============================");
         System.out.println("Ingrese la cantidad de eventos:");
-        int cantEventos = sc.nextInt(); //Leo la cantidad de eventos que se van a crear
+        int cantEventos = sc.nextInt();
         sc.nextLine();
-        for(int eventosCreados = 0; eventosCreados < cantEventos; eventosCreados ++){
+
+        for (int eventosCreados = 0; eventosCreados < cantEventos; eventosCreados++) {
+
             //Leer valores del evento
             System.out.println("Ingrese el título del evento " + id);
-            String titulo = sc.nextLine();
+            String tituloEvento = sc.nextLine();
             System.out.println("Ingrese el costo base del evento");
             double costoBase = sc.nextDouble();
             sc.nextLine();
@@ -23,22 +46,85 @@ public class App {
             if (respuesta.equals("s") || respuesta.equals("si") || respuesta.equals("sí")) {
                 esGratuito= false;
             }
+            //Crear evento, le paso el valor leído de los atributos
+            EventoUniversitario evento = new EventoUniversitario("EVT-" + id, tituloEvento, costoBase, esGratuito);
 
-            //Creo un objeto del tipo EventoUniversitario con los valores leídos
-            EventoUniversitario evento = new EventoUniversitario("EVT-" + id, titulo, costoBase, esGratuito);
+            //Leer valores de la sala
+            System.out.println("Ingrese el nombre de la sala");
+            String nombreSala = sc.nextLine();
+            //Crear sala con los valores leídos
+            Sala sala = new Sala(id, nombreSala);
+            //Asigno sala creada al evento
+            evento.asignarSala(sala);
 
-            //Se muestran los datos del evento
-            System.out.println("\n\nDATOS DEL EVENTO:");
+            //Crear evento de copia
+            EventoUniversitario eventoCopia = new EventoUniversitario(evento);
+
+            //Pedir cantidad de actividades para un evento
+            System.out.println("\n\nREGISTRO DE ACTIVIDADES PARA EL EVENTO " + evento.getTitulo());
+            System.out.println("================================================================");
+            System.out.println("Ingrse la cantidad de actividades para el evento:");
+            int cantidadActividades = sc.nextInt(); //leo la cantidad de actividades que va a relizarse para el evento.
+            sc.nextLine();
+            int idActividad = 1;
+            for (int j = 0; j < cantidadActividades; j++) {
+                System.out.println("Ingrese el título de la actividad:" + idActividad);
+                String tituloActividad = sc.nextLine();
+                int cupoMinimoRequerido = 5;
+                System.out.println("Ingrese el cupo máximo de la actividad (mayor o igual al cupo mínimo):");
+                int cupoMaximo = sc.nextInt();
+                //Uso un while para asegurarme de que el cupo máximo sea mayor que el mínimo
+                while (cupoMaximo < cupoMinimoRequerido){
+                    System.out.println("CUPO MÁXIMO MENOR QUE EL CUPO MÍNIMO, ingrese un cupo máximo mayor o igual al cupo mínimo:");
+                    cupoMaximo = sc.nextInt();
+                }
+                sc.nextLine();
+                //Construyo la actividad con los datos leídos
+                evento.crearActividad(idActividad, tituloActividad, cupoMaximo);
+                ++idActividad;
+            }
+
+            //MOSTRAR LISTA DE ACTIVIDADES CREADAS
+            List<Actividad> actividades = evento.getActividades();
+            System.out.println("\nLista de actividades del evento:");
+            for (Actividad act : actividades) {
+                System.out.println("Id: " + act.getId());
+                System.out.println("Nombre: " + act.getTitulo());
+                System.out.println("Cupo máximo: " + act.getCupoMaximo());
+                System.out.println("------------------------------------------------------");
+            }
+
+            //INSCRIPCIÓN DE ESTUDIANTES EN ACTIVIDADES
+            System.out.println("\nINSCRIPCIÓN DE ESTUDIANTES");
+            System.out.println("=========================================================");
+            System.out.println("¿Cuántas inscripciones desea realizar para este evento?");
+            int cantInscripciones = sc.nextInt();
+            sc.nextLine();
+
+            for (int i = 0; i < cantInscripciones; i++) {
+                System.out.println("Ingrese legajo del estudiante a inscribir:");
+                String legajo = sc.nextLine();
+
+                System.out.println("Ingrese ID de la Actividad a la que se va a inscribir:");
+                int idBuscado = sc.nextInt();
+                sc.nextLine();
+
+                // Busco al estudiante en la lista y lo inscribo
+                for (Estudiante estudiante : lsitaEstudiantes) {
+                    if (estudiante.getLegajo().equals(legajo)) {
+                        // Usamos idBuscado - 1 para obtener el índice correcto del ArrayList
+                        evento.getActividades().get(idBuscado - 1).inscribir(estudiante);
+                        System.out.println("Estudiante inscripto con éxito.");
+                    }
+                }
+            }
+            //Mostrar datos
+            System.out.println("\n\nDatos del evento: ");
             evento.mostrarDatos();
 
-            //Creo un objeto de copia de la instancia anterior
-            EventoUniversitario eventoCopia = new EventoUniversitario(evento);
-            //Se muestras los datos del EVENTO DE COPIA
-            System.out.println("\n\nDATOS DEL EVENTOS DE COPIA:");
-            eventoCopia.mostrarDatos();
             id++;
         }
-        //Mostrar la cantidad de eventos creados
-        System.out.println("\nCantidad de eventos creados (originales + copia): " + EventoUniversitario.getCantidadEventos());
+        //Mostrar número de eventos creados
+        System.out.println("\n\nNúmero de eventos creados (originales + copia): " + EventoUniversitario.getCantidadEventos());
     }
 }
